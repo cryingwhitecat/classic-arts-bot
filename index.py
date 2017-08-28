@@ -9,6 +9,8 @@ logging.basicConfig(level=logging.DEBUG,
 config = configparser.ConfigParser()
 config.readfp(open(r'config.cfg'))
 token=config.get('Section1','token')
+magritteUrl=config.get('Section1','magritteUrl')
+picassoUrl=config.get('Section1','picassoUrl')
 updater=Updater(token='448011630:AAGTjU7CGUsGNx1reZJJN79_n3r-aDHXM8o')
 dispatcher=updater.dispatcher
 
@@ -18,14 +20,14 @@ def start(bot,update):
     bot.send_message(chat_id=update.message.chat_id,text="Hello World",reply_markup=markup)
 
 def handlePicasso(bot,update):
-    image=open('Data/Paintings/Picasso-Guernica.jpg','rb')
+    #image=open(picassoUrl)
     bot.send_message(chat_id=update.message.chat_id,text="Picasso-Guernica,1938")
-    bot.send_photo(chat_id=update.message.chat_id,photo=image)
+    #bot.send_photo(chat_id=update.message.chat_id,photo=picassoUrl)
 
 def handleMargitte(bot,update):
-    image=open('Data/Paintings/Magritte-The Empire of The Light.jpg','rb')
+   # image=open(magritteUrl)
     bot.send_message(chat_id=update.message.chat_id,text="Magritte-The Emprire of The Light,1953(Unfinished)")
-    bot.send_photo(chat_id=update.message.chat_id,photo=image)
+   # bot.send_photo(chat_id=update.message.chat_id,photo=magritteUrl)
 
 def handlePaintings(bot,update):
     markup=[['Picasso','Magritte']]
