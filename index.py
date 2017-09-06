@@ -9,14 +9,25 @@ from config import *
 class Handler:
 
     handlers={}
-
+    infos=dict()
 
     def AddHandler(key,value):
         Handler.handlers[key]=value
 
+    def AddInfo(key,value):
+        Handler.infos[key]=value
+
     def start(bot,update):
         markup=telegram.ReplyKeyboardMarkup(Config.mainMarkup)
         bot.send_message(chat_id=update.message.chat_id,text="Hello World",reply_markup=markup)
+
+    def handleInfo(bot,update):
+        name=update.message.text.split(" ")[1].lower()
+        try:
+            info=Handler.infos[name]
+        except KeyError as e:
+            bot.send_message(chat_id=update.message.chat_id,text="No artist with this name in our database.")
+        bot.send_message(chat_id=update.message.chat_id,text=info)
 
     #returns the keyboard with all paintings painted by Magritte
     def handleMargitte(bot,update):
@@ -47,6 +58,12 @@ class Handler:
         markup=telegram.ReplyKeyboardMarkup(Config.mainMarkup)
         bot.send_message(chat_id=update.message.chat_id,text="Returning To The Main...",reply_markup=markup)
     
+    def handleAvignon(bot,update):
+        chat_id=update.message.chat_id
+        bot.send_message(chat_id=chat_id,text="Les Demoiselles d'Avignon,1907")
+        bot.send_photo(chat_id=chat_id,photo=Config.avignonUrl,
+        reply_markup=telegram.ReplyKeyboardMarkup(Config.returnMarkup))
+
     #returns the "The Empire Of The Light" painting 
     def handleEmpire(bot,update):
         bot.send_message(chat_id=update.message.chat_id,text="The Empire Of The Light,1953(Unfinished)")
@@ -81,6 +98,9 @@ logging.basicConfig(level=logging.DEBUG,
 updater=Updater(token=Config.token)
 dispatcher=updater.dispatcher
 
+Handler.AddInfo('magritte',Config.magritteInfo)
+Handler.AddInfo('picasso',Config.picassoInfo)
+
 Handler.AddHandler('Magritte',Handler.handleMargitte)
 Handler.AddHandler('Picasso',Handler.handlePicasso)
 Handler.AddHandler('Golconde',Handler.handleGolconde)
@@ -89,9 +109,12 @@ Handler.AddHandler('Paintings',Handler.handlePaintings)
 Handler.AddHandler('Return To The Main Menu',Handler.handleReturnToMain)
 Handler.AddHandler('Return To Artists',Handler.handleReturnToArtists)
 Handler.AddHandler('Guernica',Handler.handleGuernica)
+Handler.AddHandler("Les Demoiselles d'Avignon",Handler.handleAvignon)
+infoHandler=CommandHandler('infoAbout',Handler.handleInfo)
 
 ch=CommandHandler('start',Handler.start)
 mh=MessageHandler(Filters.text,Handler.handleMessage)
 dispatcher.add_handler(ch)
 dispatcher.add_handler(mh)
+dispatcher.add_handler(infoHandler)
 updater.start_polling()
